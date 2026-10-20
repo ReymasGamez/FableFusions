@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Fable Fusions" />
-  <meta name="description" content="A creature-database playtest with 21 original species across seven Elements and seven Types." />
+  <meta name="description" content="21 original creatures plus weighted, hidden genetics-based fusion outcomes." />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./icon-180.png" />
   <title>Fable Fusions ✨</title>
@@ -17,31 +17,212 @@
 
 /* Creature Library added for v0.2 */
 .libraryDialog{max-height:92dvh}.libraryTabs{display:flex;gap:7px;overflow-x:auto;padding:3px 2px 11px;margin-bottom:10px;scrollbar-width:thin}.libChip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:76px;max-width:96px;padding:8px 5px;border:2px solid #ede6f1;border-radius:13px;background:white;font-size:23px}.libChip span{font-size:9px;font-weight:800;line-height:1.1}.libChip.active{background:#efe5ff;border-color:#9f84d9}.libraryDetail{background:#fff;border:1px solid #e8dff1;padding:13px;border-radius:16px}.libTitle{display:flex;align-items:center;gap:12px}.libTitle b{font-size:19px}.miniStats{background:#f4edf9;border-radius:11px;padding:9px;font-size:12px;font-weight:800;margin:10px 0}.libraryDetail h3{font-size:12px;letter-spacing:1px;color:#806b9d;text-transform:uppercase;margin:15px 0 8px}.kline{font-size:12px;line-height:1.5;margin:5px 0}.kline b{display:inline-block;min-width:115px;color:#77718a}.kline .tag{display:inline-block;margin:2px}.affRow{display:grid;grid-template-columns:95px 1fr 26px;align-items:center;gap:7px;font-size:11px;margin:7px 0}.affTrack{height:8px;background:#ece6f2;border-radius:8px;overflow:hidden}.affTrack i{display:block;height:100%;background:#9982d2;border-radius:8px}.handCard .cardSub{font-size:10px}.slot.occupied .tags{gap:3px}.slot.occupied .tag{font-size:8px}
+
+/* v0.3 hidden-fusion reveal */
+.fusionPreview{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.fusionPreview span{border-radius:11px;background:#f3edff;padding:11px 7px;text-align:center;font-size:12px;font-weight:850;color:#755c9d}
+.resultCreature{border:2px solid #dcc7f4;border-radius:17px;background:linear-gradient(140deg,#fffdf7,#eeeaff);padding:17px 10px;margin-top:16px;display:flex;align-items:center;flex-direction:column;gap:7px}
+.resultCreature b{font-size:20px}.resultIcon{font-size:32px}
 </style>
 </head>
 <body><div id="app" class="screen"></div><script>
 'use strict';
 // Temporary species library (approved universal schema, example creature data only).
-const VERSION='0.2 · CREATURE TEST';
+// All fusion formulas in v0.3 are explicitly provisional, tuned for playtesting.
+const VERSION='0.3 · FUSION LAB';
 const ELEMENTS=["Natressa", "Feöhr", "Aeliquis", "Obscuris", "Photonia", "Noëtics", "Astraelis"];
 const TYPES=["Bestia", "Bestialata", "Serpen", "Fae", "Feond", "Insekta", "Marinus"];
 const STARTERS=[{"speciesId":"FF-001","name":"Ember Pup","icon":"🐶","element":"Feöhr","type":"Bestia","cost":1,"attack":2,"maxHP":3,"ability":"quick","gameplayKeywords":["quick"],"artwork":"🐶","bio":"Canid","anatomy":["Quadrupedal"],"physical":{"coverings":["Furred"],"appendages":["Tailed","Whiskered"],"adaptations":["Clawed","Padded"],"unusual":[]},"locomotion":{"ground":["Walking","Running"],"aerial":[],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":19,"Feöhr":68,"Aeliquis":30,"Obscuris":28,"Photonia":16,"Noëtics":13,"Astraelis":0},"origin":"Original"},{"speciesId":"FF-002","name":"Moss Fawn","icon":"🦌","element":"Natressa","type":"Bestia","cost":2,"attack":1,"maxHP":6,"ability":"ward","gameplayKeywords":["ward"],"artwork":"🦌","bio":"Cervid","anatomy":["Quadrupedal"],"physical":{"coverings":["Furred"],"appendages":["Antlered","Tailed"],"adaptations":[],"unusual":["Patterned"]},"locomotion":{"ground":["Walking","Running","Hopping"],"aerial":[],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":91,"Feöhr":30,"Aeliquis":43,"Obscuris":0,"Photonia":21,"Noëtics":12,"Astraelis":19},"origin":"Original"},{"speciesId":"FF-003","name":"Mist Hare","icon":"🐰","element":"Noëtics","type":"Bestia","cost":1,"attack":2,"maxHP":3,"ability":"mend","gameplayKeywords":["mend"],"artwork":"🐰","bio":"Lagomorph","anatomy":["Bipedal","Quadrupedal"],"physical":{"coverings":["Furred"],"appendages":["Tailed","Whiskered"],"adaptations":["Padded"],"unusual":[]},"locomotion":{"ground":["Walking","Hopping"],"aerial":[],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":95,"Feöhr":16,"Aeliquis":21,"Obscuris":44,"Photonia":13,"Noëtics":91,"Astraelis":39},"origin":"Original"},{"speciesId":"FF-004","name":"Sunwing Fox","icon":"🦊","element":"Photonia","type":"Bestialata","cost":2,"attack":2,"maxHP":4,"ability":"mend","gameplayKeywords":["mend"],"artwork":"🦊","bio":"Canid","anatomy":["Quadrupedal"],"physical":{"coverings":["Furred","Feathered"],"appendages":["Winged","Tailed"],"adaptations":["Clawed"],"unusual":["Patterned"]},"locomotion":{"ground":["Walking","Running"],"aerial":["Flying","Gliding"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":30,"Feöhr":27,"Aeliquis":14,"Obscuris":22,"Photonia":79,"Noëtics":30,"Astraelis":25},"origin":"Original"},{"speciesId":"FF-005","name":"Comet Owl","icon":"🦉","element":"Astraelis","type":"Bestialata","cost":2,"attack":2,"maxHP":4,"ability":"quick","gameplayKeywords":["quick"],"artwork":"🦉","bio":"Avian","anatomy":["Bipedal"],"physical":{"coverings":["Feathered"],"appendages":["Winged","Crested"],"adaptations":["Clawed"],"unusual":[]},"locomotion":{"ground":["Walking"],"aerial":["Flying","Gliding","Hovering"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":6,"Feöhr":37,"Aeliquis":31,"Obscuris":2,"Photonia":7,"Noëtics":14,"Astraelis":85},"origin":"Original"},{"speciesId":"FF-006","name":"Rainwing Lynx","icon":"🐱","element":"Aeliquis","type":"Bestialata","cost":3,"attack":3,"maxHP":5,"ability":"ward","gameplayKeywords":["ward"],"artwork":"🐱","bio":"Felid","anatomy":["Quadrupedal"],"physical":{"coverings":["Furred"],"appendages":["Winged","Tailed","Whiskered"],"adaptations":["Clawed","Padded"],"unusual":["Patterned"]},"locomotion":{"ground":["Walking","Running","Climbing"],"aerial":["Gliding"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":42,"Feöhr":98,"Aeliquis":94,"Obscuris":21,"Photonia":30,"Noëtics":3,"Astraelis":0},"origin":"Original"},{"speciesId":"FF-007","name":"Shadow Wyrm","icon":"🐉","element":"Obscuris","type":"Serpen","cost":3,"attack":4,"maxHP":4,"ability":"pierce","gameplayKeywords":["pierce"],"artwork":"🐉","bio":"Ophidian","anatomy":["Serpentine"],"physical":{"coverings":["Scaled"],"appendages":["Horned","Tailed"],"adaptations":["Fanged"],"unusual":["Bioluminescent"]},"locomotion":{"ground":["Slithering"],"aerial":[],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":29,"Feöhr":35,"Aeliquis":17,"Obscuris":84,"Photonia":18,"Noëtics":23,"Astraelis":16},"origin":"Original"},{"speciesId":"FF-008","name":"Torrent Serpent","icon":"🐍","element":"Aeliquis","type":"Serpen","cost":2,"attack":2,"maxHP":5,"ability":"ward","gameplayKeywords":["ward"],"artwork":"🐍","bio":"Ophidian","anatomy":["Serpentine","Pisciform"],"physical":{"coverings":["Scaled"],"appendages":["Finned","Tailed"],"adaptations":["Gilled"],"unusual":["Patterned"]},"locomotion":{"ground":["Slithering"],"aerial":[],"aquatic":["Swimming"],"subterranean":[]},"affinities":{"Natressa":3,"Feöhr":11,"Aeliquis":73,"Obscuris":20,"Photonia":33,"Noëtics":29,"Astraelis":23},"origin":"Original"},{"speciesId":"FF-009","name":"Star Coil","icon":"🐍","element":"Astraelis","type":"Serpen","cost":1,"attack":1,"maxHP":4,"ability":"thorns","gameplayKeywords":["thorns"],"artwork":"🐍","bio":"Ophidian","anatomy":["Serpentine"],"physical":{"coverings":["Smooth-Skinned"],"appendages":["Tailed"],"adaptations":["Prehensile"],"unusual":["Translucent"]},"locomotion":{"ground":["Slithering"],"aerial":["Floating"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":20,"Feöhr":36,"Aeliquis":0,"Obscuris":38,"Photonia":5,"Noëtics":40,"Astraelis":75},"origin":"Original"},{"speciesId":"FF-010","name":"Meadow Sprite","icon":"🧚","element":"Natressa","type":"Fae","cost":1,"attack":1,"maxHP":3,"ability":"mend","gameplayKeywords":["mend"],"artwork":"🧚","bio":"Unclassified","anatomy":["Bipedal"],"physical":{"coverings":["Smooth-Skinned"],"appendages":["Winged"],"adaptations":["Prehensile"],"unusual":["Bioluminescent"]},"locomotion":{"ground":["Walking"],"aerial":["Flying","Hovering"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":80,"Feöhr":3,"Aeliquis":1,"Obscuris":22,"Photonia":19,"Noëtics":1,"Astraelis":7},"origin":"Original"},{"speciesId":"FF-011","name":"Mind Lantern","icon":"🪼","element":"Noëtics","type":"Fae","cost":2,"attack":1,"maxHP":6,"ability":"thorns","gameplayKeywords":["thorns"],"artwork":"🪼","bio":"Unclassified","anatomy":["Amorphous","Cephalopodal"],"physical":{"coverings":["Smooth-Skinned"],"appendages":["Tentacled"],"adaptations":[],"unusual":["Translucent","Bioluminescent"]},"locomotion":{"ground":[],"aerial":["Floating"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":27,"Feöhr":14,"Aeliquis":39,"Obscuris":36,"Photonia":7,"Noëtics":94,"Astraelis":13},"origin":"Original"},{"speciesId":"FF-012","name":"Lumen Pixie","icon":"🧚","element":"Photonia","type":"Fae","cost":1,"attack":2,"maxHP":2,"ability":"quick","gameplayKeywords":["quick"],"artwork":"🧚","bio":"Unclassified","anatomy":["Bipedal"],"physical":{"coverings":["Smooth-Skinned"],"appendages":["Winged"],"adaptations":[],"unusual":["Bioluminescent"]},"locomotion":{"ground":["Walking"],"aerial":["Flying","Hovering"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":2,"Feöhr":1,"Aeliquis":11,"Obscuris":11,"Photonia":87,"Noëtics":7,"Astraelis":19},"origin":"Original"},{"speciesId":"FF-013","name":"Ash Imp","icon":"😈","element":"Feöhr","type":"Feond","cost":2,"attack":3,"maxHP":3,"ability":"pierce","gameplayKeywords":["pierce"],"artwork":"😈","bio":"Unclassified","anatomy":["Bipedal"],"physical":{"coverings":["Smooth-Skinned"],"appendages":["Horned","Tailed"],"adaptations":["Clawed"],"unusual":[]},"locomotion":{"ground":["Walking","Running","Climbing"],"aerial":[],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":16,"Feöhr":92,"Aeliquis":24,"Obscuris":9,"Photonia":6,"Noëtics":19,"Astraelis":27},"origin":"Original"},{"speciesId":"FF-014","name":"Gloom Kit","icon":"🐈","element":"Obscuris","type":"Feond","cost":2,"attack":3,"maxHP":3,"ability":"thorns","gameplayKeywords":["thorns"],"artwork":"🐈","bio":"Felid","anatomy":["Quadrupedal"],"physical":{"coverings":["Furred"],"appendages":["Tailed","Whiskered"],"adaptations":["Clawed","Padded"],"unusual":["Patterned"]},"locomotion":{"ground":["Walking","Running","Climbing"],"aerial":[],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":17,"Feöhr":24,"Aeliquis":2,"Obscuris":78,"Photonia":27,"Noëtics":18,"Astraelis":34},"origin":"Original"},{"speciesId":"FF-015","name":"Astral Gazer","icon":"👁️","element":"Astraelis","type":"Feond","cost":3,"attack":2,"maxHP":6,"ability":"ward","gameplayKeywords":["ward"],"artwork":"👁️","bio":"Unclassified","anatomy":["Amorphous","Cephalopodal"],"physical":{"coverings":["Smooth-Skinned"],"appendages":["Tentacled"],"adaptations":[],"unusual":["Translucent","Bioluminescent"]},"locomotion":{"ground":[],"aerial":["Hovering","Floating"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":99,"Feöhr":13,"Aeliquis":11,"Obscuris":36,"Photonia":42,"Noëtics":30,"Astraelis":95},"origin":"Original"},{"speciesId":"FF-016","name":"Bloom Beetle","icon":"🪲","element":"Natressa","type":"Insekta","cost":1,"attack":1,"maxHP":5,"ability":"ward","gameplayKeywords":["ward"],"artwork":"🪲","bio":"Arthropod","anatomy":["Multipodal"],"physical":{"coverings":["Shelled","Plated"],"appendages":["Horned"],"adaptations":["Clawed"],"unusual":["Patterned"]},"locomotion":{"ground":["Walking","Climbing"],"aerial":[],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":76,"Feöhr":0,"Aeliquis":24,"Obscuris":44,"Photonia":9,"Noëtics":19,"Astraelis":2},"origin":"Original"},{"speciesId":"FF-017","name":"Prism Moth","icon":"🦋","element":"Photonia","type":"Insekta","cost":2,"attack":2,"maxHP":3,"ability":"mend","gameplayKeywords":["mend"],"artwork":"🦋","bio":"Arthropod","anatomy":["Multipodal"],"physical":{"coverings":["Feathered"],"appendages":["Winged","Whiskered"],"adaptations":[],"unusual":["Patterned"]},"locomotion":{"ground":["Crawling"],"aerial":["Flying","Gliding"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":42,"Feöhr":1,"Aeliquis":13,"Obscuris":6,"Photonia":76,"Noëtics":41,"Astraelis":21},"origin":"Original"},{"speciesId":"FF-018","name":"Whisper Mantis","icon":"🦗","element":"Noëtics","type":"Insekta","cost":3,"attack":4,"maxHP":3,"ability":"pierce","gameplayKeywords":["pierce"],"artwork":"🦗","bio":"Arthropod","anatomy":["Bipedal","Multipodal"],"physical":{"coverings":["Plated"],"appendages":["Crested"],"adaptations":["Clawed","Prehensile"],"unusual":["Segmented"]},"locomotion":{"ground":["Walking","Climbing"],"aerial":["Gliding"],"aquatic":[],"subterranean":[]},"affinities":{"Natressa":39,"Feöhr":34,"Aeliquis":29,"Obscuris":8,"Photonia":37,"Noëtics":76,"Astraelis":34},"origin":"Original"},{"speciesId":"FF-019","name":"Current Crab","icon":"🦀","element":"Aeliquis","type":"Marinus","cost":2,"attack":2,"maxHP":5,"ability":"ward","gameplayKeywords":["ward"],"artwork":"🦀","bio":"Crustacean","anatomy":["Multipodal"],"physical":{"coverings":["Shelled","Plated"],"appendages":[],"adaptations":["Clawed"],"unusual":["Segmented"]},"locomotion":{"ground":["Walking"],"aerial":[],"aquatic":["Swimming","Paddling"],"subterranean":[]},"affinities":{"Natressa":2,"Feöhr":44,"Aeliquis":78,"Obscuris":20,"Photonia":30,"Noëtics":37,"Astraelis":39},"origin":"Original"},{"speciesId":"FF-020","name":"Ink Squid","icon":"🦑","element":"Obscuris","type":"Marinus","cost":2,"attack":2,"maxHP":4,"ability":"thorns","gameplayKeywords":["thorns"],"artwork":"🦑","bio":"Molluscan","anatomy":["Multipodal","Cephalopodal"],"physical":{"coverings":["Smooth-Skinned"],"appendages":["Tentacled"],"adaptations":["Prehensile"],"unusual":["Patterned"]},"locomotion":{"ground":[],"aerial":[],"aquatic":["Swimming","Jet-Propelled"],"subterranean":[]},"affinities":{"Natressa":86,"Feöhr":37,"Aeliquis":19,"Obscuris":82,"Photonia":40,"Noëtics":40,"Astraelis":38},"origin":"Original"},{"speciesId":"FF-021","name":"Ember Koi","icon":"🐟","element":"Feöhr","type":"Marinus","cost":1,"attack":2,"maxHP":3,"ability":"quick","gameplayKeywords":["quick"],"artwork":"🐟","bio":"Piscine","anatomy":["Pisciform"],"physical":{"coverings":["Scaled"],"appendages":["Finned","Tailed"],"adaptations":["Gilled"],"unusual":["Patterned"]},"locomotion":{"ground":[],"aerial":[],"aquatic":["Swimming","Water-Skimming"],"subterranean":[]},"affinities":{"Natressa":41,"Feöhr":69,"Aeliquis":20,"Obscuris":7,"Photonia":22,"Noëtics":20,"Astraelis":15},"origin":"Original"}];
 const SYM={"Natressa": "🍃", "Feöhr": "🔥", "Aeliquis": "💧", "Obscuris": "🌑", "Photonia": "☀️", "Noëtics": "🧠", "Astraelis": "🌟"};
-// The following fusion methods are LEGACY TEST mechanics, not the approved hidden algorithm.
-const FUSIONS=[
- {id:'balanced',title:'Balanced',icon:'⚖️',cost:1,desc:'Old test: blend parent stats.'},
- {id:'biased',title:'Biased',icon:'🎯',cost:1,desc:'Old test: first creature dominates.'},
- {id:'additive',title:'Additive',icon:'➕',cost:2,desc:'Old test: combine much of their strength.'},
- {id:'reactive',title:'Reactive',icon:'🌟',cost:2,desc:'Old test: an elemental reaction.'}
-];
-const REACTIONS={
- 'Feöhr-Natressa':['Bramble Phoenix','🦚','blast'],
- 'Aeliquis-Feöhr':['Mist Salamander','🦎','draw'],
- 'Aeliquis-Natressa':['Lotus Leviathan','🐉','restore'],
- 'Obscuris-Photonia':['Eclipse Kirin','🦄','drain'],
- 'Aeliquis-Photonia':['Aurora Koi','🐟','restore'],
- 'Feöhr-Obscuris':['Umbral Dragon','🐲','blast']
-};
+/* Fable Fusions v0.3 — EXPERIMENTAL fusion engine.
+   Probabilities and inheritance rules below are playtest values, NOT finalized balance.
+   Creature data: one visible Element/Type/Biology, >=1 anatomical keyword,
+   optional physical/locomotion keywords, seven immutable integer affinities.
+   Outcome is weighted random and never selected by the player. */
+const FusionEngine = (() => {
+  'use strict';
+  const ELEMENTS = ['Natressa','Feöhr','Aeliquis','Obscuris','Photonia','Noëtics','Astraelis'];
+  const OUTCOMES = ['balanced','biased','additive','reactive'];
+  const COST = 2;
+  const EMERGENT = {
+    'Feöhr|Natressa':'Obscuris',
+    'Aeliquis|Feöhr':'Noëtics',
+    'Aeliquis|Natressa':'Photonia',
+    'Obscuris|Photonia':'Astraelis',
+    'Aeliquis|Photonia':'Astraelis',
+    'Feöhr|Obscuris':'Astraelis',
+    'Natressa|Photonia':'Noëtics',
+    'Natressa|Obscuris':'Noëtics',
+    'Natressa|Noëtics':'Astraelis',
+    'Natressa|Astraelis':'Photonia',
+    'Feöhr|Photonia':'Astraelis',
+    'Feöhr|Noëtics':'Obscuris',
+    'Feöhr|Astraelis':'Photonia',
+    'Aeliquis|Obscuris':'Noëtics',
+    'Aeliquis|Noëtics':'Astraelis',
+    'Aeliquis|Astraelis':'Natressa',
+    'Obscuris|Noëtics':'Astraelis',
+    'Obscuris|Astraelis':'Feöhr',
+    'Photonia|Noëtics':'Astraelis',
+    'Photonia|Astraelis':'Noëtics',
+    'Noëtics|Astraelis':'Photonia'
+  };
+  const PHYSICAL_GROUPS = ['coverings','appendages','adaptations','unusual'];
+  const MOVEMENT_GROUPS = ['ground','aerial','aquatic','subterranean'];
+  const clamp = (n,lo,hi) => Math.max(lo, Math.min(hi,n));
+  const unique = values => [...new Set(values.filter(Boolean))];
+  const arr = values => Array.isArray(values) ? values : [];
+  const group = (obj,key) => arr(obj && obj[key]);
+  const overlap = (a,b) => a.filter(x => b.includes(x)).length;
+  const pairKey = (a,b) => [a,b].sort().join('|');
+  const coin = (rng) => clamp(Number(rng()),0,0.999999999);
+  function chooseWeighted(weightMap,rng=Math.random) {
+    const entries = Object.entries(weightMap).filter(([,weight])=>Number.isFinite(weight)&&weight>0);
+    if(!entries.length) throw new Error('No positive weighted candidates');
+    const sum=entries.reduce((n,[,weight])=>n+weight,0);
+    let needle=coin(rng)*sum;
+    for(const [item,weight] of entries) {needle-=weight;if(needle<0)return item;}
+    return entries[entries.length-1][0];
+  }
+  function physicalTags(c){return unique(PHYSICAL_GROUPS.flatMap(k=>group(c.physical,k)));}
+  function movementTags(c){return unique(MOVEMENT_GROUPS.flatMap(k=>group(c.locomotion,k)));}
+  function strengths(c){return Number(c.attack||0)+Number(c.maxHP||0)*0.55+Number(c.cost||0)*0.5;}
+  function selectDominant(a,b){
+    const sa = strengths(a) + (Number(a.affinities?.[a.element])||0)/25;
+    const sb = strengths(b) + (Number(b.affinities?.[b.element])||0)/25;
+    if(sa!==sb)return sa>sb?a:b;
+    return String(a.speciesId||a.name)<String(b.speciesId||b.name)?a:b;
+  }
+  function calculateScores(a,b) {
+    // Only approved identity fields, keyword matches and the seven elemental values contribute.
+    const s={balanced:12,biased:12,additive:12,reactive:12};
+    const sameBio=a.bio===b.bio;
+    const anaA=arr(a.anatomy),anaB=arr(b.anatomy);
+    const physA=physicalTags(a),physB=physicalTags(b);
+    const moveA=movementTags(a),moveB=movementTags(b);
+    const anaShared=overlap(anaA,anaB),physShared=overlap(physA,physB),moveShared=overlap(moveA,moveB);
+    const anaDifferent=unique([...anaA,...anaB]).length-anaShared;
+    const physDifferent=unique([...physA,...physB]).length-physShared;
+    const moveDifferent=unique([...moveA,...moveB]).length-moveShared;
+    if(sameBio){s.balanced+=8;s.additive+=3;}else{s.reactive+=6;s.biased+=2;}
+    s.balanced += 4*anaShared + 1.5*physShared + moveShared;
+    s.additive += 2*anaShared + 0.8*physShared + 0.7*physDifferent;
+    s.reactive += 2.5*anaDifferent + 1.4*moveDifferent + 0.8*physDifferent;
+    s.biased += Math.min(10, 2*Math.abs(anaA.length-anaB.length)+Math.abs(physA.length-physB.length));
+    if(a.element===b.element){s.balanced+=6;s.additive+=3;}
+    else{s.reactive+=7;s.biased+=2;}
+    // Compare ALL seven fixed affinities, not merely the two face elements.
+    const totalGap = ELEMENTS.reduce((t,e)=>t+Math.abs(a.affinities[e]-b.affinities[e]),0);
+    const similarity = clamp(1-totalGap/(ELEMENTS.length*100),0,1);
+    s.balanced+=7*similarity;
+    s.reactive+=7*(1-similarity);
+    const statsGap=Math.abs(strengths(a)-strengths(b));
+    s.biased+=clamp(statsGap,0,11);
+    s.additive+=clamp((Number(a.attack)+Number(b.attack))/2,0,7);
+    s.balanced+=Math.max(0,4-statsGap/2);
+    // Structural context: Multipodal carries a different interaction depending on biology.
+    if(anaA.includes('Multipodal')||anaB.includes('Multipodal')) {
+      if(['Arthropod','Crustacean'].includes(a.bio)||['Arthropod','Crustacean'].includes(b.bio))s.additive+=4;
+      if(a.bio==='Molluscan'||b.bio==='Molluscan')s.reactive+=4;
+    }
+    if(physA.includes('Winged')!==physB.includes('Winged'))s.reactive+=3;
+    if(physA.includes('Gilled')&&physB.includes('Gilled'))s.balanced+=2;
+    // A low positive chance remains for all four philosophies. These are NOT genetics stats.
+    return s;
+  }
+  function probabilities(a,b){
+    const scores=calculateScores(a,b),total=Object.values(scores).reduce((x,y)=>x+y,0);
+    return Object.fromEntries(OUTCOMES.map(k=>[k,scores[k]/total]));
+  }
+  function rollType(a,b,rng=Math.random){return chooseWeighted(calculateScores(a,b),rng);}
+  function rollElement(a,b,rng=Math.random){
+    const emerging=EMERGENT[pairKey(a.element,b.element)];
+    const weights={};
+    for(const e of ELEMENTS){
+      const baseline=(a.affinities[e]+b.affinities[e])/17 + 1;
+      weights[e]=baseline+(e===a.element?16:0)+(e===b.element?16:0)+(e===emerging?19:0);
+    }
+    return chooseWeighted(weights,rng);
+  }
+  function pickType(a,b,outcome,rng){
+    if(a.type===b.type)return a.type;
+    if(outcome==='biased')return selectDominant(a,b).type;
+    return chooseWeighted({[a.type]:4,[b.type]:4},rng);
+  }
+  function makeGroups(a,b,kind,outcome,dominant){
+    const groups=kind==='physical'?PHYSICAL_GROUPS:MOVEMENT_GROUPS;
+    const property=c=>c[kind];
+    const secondary=dominant===a?b:a;
+    return Object.fromEntries(groups.map(k=>{
+      const aa=group(property(a),k),bb=group(property(b),k);
+      const intersection=aa.filter(x=>bb.includes(x));
+      if(outcome==='additive'||outcome==='reactive')return [k,unique([...aa,...bb])];
+      if(outcome==='biased')return [k,unique([...group(property(dominant),k),...intersection,...group(property(secondary),k).slice(0,1)])];
+      return [k,unique([...intersection,...aa.slice(0,2),...bb.slice(0,2)])];
+    }));
+  }
+  function makeAnatomy(a,b,outcome,dominant){
+    const union=unique([...arr(a.anatomy),...arr(b.anatomy)]);
+    if(outcome==='biased')return unique([...dominant.anatomy,...union.filter(x=>dominant.anatomy.includes(x))]);
+    return union.length?union:['Amorphous'];
+  }
+  const LABELS={balanced:'Balanced',biased:'Biased',additive:'Additive',reactive:'Reactive'};
+  const ICONS={balanced:'⚖️',biased:'🎯',additive:'➕',reactive:'🌟'};
+  const ELEMENT_NAMES={'Natressa':'Bloom','Feöhr':'Ember','Aeliquis':'Tide','Obscuris':'Gloom','Photonia':'Sun','Noëtics':'Dream','Astraelis':'Star'};
+  function createCreature(a,b,outcome,rng=Math.random){
+    if(!OUTCOMES.includes(outcome))throw new Error('Unknown fusion outcome');
+    if(a.origin!=='Original'||b.origin!=='Original')throw new Error('Only original creatures can fuse');
+    const dominant=selectDominant(a,b),secondary=dominant===a?b:a;
+    const element=rollElement(a,b,rng);
+    const type=pickType(a,b,outcome,rng);
+    const affinities={};
+    for(const e of ELEMENTS){
+      const va=a.affinities[e],vb=b.affinities[e];
+      const mixed=outcome==='biased'?(dominant.affinities[e]*0.75+secondary.affinities[e]*0.25):(va+vb)/2;
+      const adjustment=e===element?8:0;
+      affinities[e]=Math.round(clamp(mixed+adjustment,0,100));
+    }
+    const aHP=Math.max(1,Number(a.hp)),bHP=Math.max(1,Number(b.hp));
+    let attack,hp;
+    if(outcome==='balanced'){
+      attack=Math.ceil((a.attack+b.attack)/2)+1;hp=Math.ceil((aHP+bHP)/2)+2;
+    } else if(outcome==='biased'){
+      attack=Math.ceil((dominant.attack*3+secondary.attack)/4)+2;
+      hp=Math.ceil((Math.max(1,dominant.hp)*3+Math.max(1,secondary.hp))/4)+2;
+    } else if(outcome==='additive'){
+      attack=a.attack+b.attack;hp=aHP+bHP-1;
+    } else {
+      attack=Math.ceil((a.attack+b.attack)/2)+2;hp=Math.ceil((aHP+bHP)/2)+3;
+    }
+    attack=Math.round(clamp(attack,1,10));hp=Math.round(clamp(hp,1,18));
+    const parentTraits=unique([...arr(a.traits),...arr(b.traits)]).slice(0,2);
+    const traits=outcome==='biased'?unique([...arr(dominant.traits),...arr(secondary.traits)]).slice(0,2):parentTraits;
+    const first=dominant.name.split(' ')[0],second=secondary.name.split(' ').slice(-1)[0];
+    const name=outcome==='balanced'?`${ELEMENT_NAMES[element]} ${second}kin`:
+      outcome==='biased'?`Echo ${first}`:
+      outcome==='additive'?`Twinheart ${second}`:`${ELEMENT_NAMES[element]} Wonder ${second}`;
+    let effect=null;
+    if(outcome==='reactive'){
+      effect={'Natressa':'restore','Feöhr':'blast','Aeliquis':'restore','Obscuris':'drain','Photonia':'restore','Noëtics':'draw','Astraelis':'draw'}[element];
+    }
+    const creature={
+      speciesId:'FUSION-GENERATED',name,icon:outcome==='biased'?dominant.icon+'✨':a.icon+b.icon,
+      element,type,cost:0,attack,maxHP:hp,hp,
+      traits,ability:traits[0]||'',gameplayKeywords:traits,artwork:outcome==='biased'?dominant.icon:a.icon+b.icon,
+      bio:outcome==='biased'?dominant.bio:(a.bio===b.bio?a.bio:(coin(rng)<0.5?a.bio:b.bio)),
+      anatomy:makeAnatomy(a,b,outcome,dominant),
+      physical:makeGroups(a,b,'physical',outcome,dominant),
+      locomotion:makeGroups(a,b,'locomotion',outcome,dominant),
+      affinities,origin:'Fusion',exhausted:true,depth:1,
+      fusionStyle:outcome,parents:[a.speciesId,b.speciesId]
+    };
+    return {creature,effect,outcome,displayType:LABELS[outcome],icon:ICONS[outcome]};
+  }
+  function resolve(a,b,rng=Math.random){const outcome=rollType(a,b,rng);return createCreature(a,b,outcome,rng);}
+  return {COST,ELEMENTS,OUTCOMES,LABELS,ICONS,calculateScores,probabilities,rollType,rollElement,resolve,createCreature};
+})();
+if(typeof module!=='undefined' && module.exports)module.exports=FusionEngine;
+
 let nextId=1;let game, selection=null, mode='normal', other=null, modal=null, message='';
 const el=(id)=>document.getElementById(id);
 const rand=(n)=>Math.floor(Math.random()*n);
@@ -51,32 +232,39 @@ function starter(row){return {...JSON.parse(JSON.stringify(row)),id:nextId++,hp:
 function shuffle(cards){for(let i=cards.length-1;i>0;i--){const j=rand(i+1);[cards[i],cards[j]]=[cards[j],cards[i]]}return cards;}
 function newSide(){let s={hp:20,board:[null,null,null],hand:[],deck:shuffle(STARTERS.map(starter)),energy:3,maxEnergy:3,fatigue:0};for(let i=0;i<4;i++)draw(s);return s;}
 function draw(s){if(!s.deck.length){s.fatigue++;s.hp-=s.fatigue;return s.fatigue;}const c=s.deck.pop();if(s.hand.length<7)s.hand.push(c);return 0;}
-function fresh(){nextId=1;game={player:newSide(),enemy:newSide(),round:1,winner:null,log:['21 sample species loaded. Open the 📖 Creature Library to inspect their hidden data.']};selection=null;mode='normal';other=null;modal=null;message='Tap a card below to summon it!';save();render();}
-function save(){try{localStorage.setItem('fableFusionsCreatures02',JSON.stringify({game,nextId}))}catch(_){}}
-function restore(){try{let data=JSON.parse(localStorage.getItem('fableFusionsCreatures02')||'null');if(data?.game?.player?.board?.length===3 && data?.game?.enemy?.board?.length===3){game=data.game;nextId=data.nextId||100;message='Welcome back! Your match was saved.';return true;}}catch(_){}return false;}
+function fresh(){nextId=1;game={player:newSide(),enemy:newSide(),round:1,winner:null,log:['Fusion Lab v0.3 loaded! Fuse two original creatures for 2 energy to discover a weighted outcome.']};selection=null;mode='normal';other=null;modal=null;message='Tap a card below to summon it!';save();render();}
+function save(){try{localStorage.setItem('fableFusionsFusion03',JSON.stringify({game,nextId}))}catch(_){}}
+function restore(){try{let data=JSON.parse(localStorage.getItem('fableFusionsFusion03')||'null');if(data?.game?.player?.board?.length===3 && data?.game?.enemy?.board?.length===3){game=data.game;nextId=data.nextId||100;message='Welcome back! Your match was saved.';return true;}}catch(_){}return false;}
 function log(s){game.log.unshift(s);game.log=game.log.slice(0,5);message=s;}
 function checkWin(){if(game.player.hp<=0)game.winner='enemy';else if(game.enemy.hp<=0)game.winner='player';if(game.winner){modal='win';mode='normal';}}
 function canAttack(c){return !!(c && c.hp>0 && !c.exhausted)}
 function ready(s,energy){s.maxEnergy=Math.min(6,energy);s.energy=s.maxEnergy;for(let c of s.board)if(c)c.exhausted=false;}
 function summon(index,enemy=false){let s=enemy?game.enemy:game.player;if(game.winner || !s.hand[index])return false;let slot=s.board.findIndex(c=>!c);const c=s.hand[index];if(slot<0){if(!enemy)log('All three slots are occupied. Fuse two critters to free a slot!');return false;}if(c.cost>s.energy){if(!enemy)log(`Need ${c.cost} energy to summon ${c.name}.`);return false;}
  s.hand.splice(index,1);s.energy-=c.cost;c.exhausted=!c.traits.includes('quick');s.board[slot]=c;log(`${enemy?'Rival':'You'} summoned ${c.name}!`);selection=null;mode='normal';return true;}
-function recipe(a,b){return REACTIONS[[a,b].sort().join('-')]||['Wonderchimera','🦄','draw'];}
-function createFusion(a,b,type){let traits=[...new Set([...a.traits,...b.traits])].slice(0,2),depth=Math.max(a.depth,b.depth)+1,attack=0,hp=0,name='',icon='',effect=null;
- if(type==='balanced'){name='Harmonykin';icon=a.icon+b.icon;hp=Math.ceil((a.hp+b.hp)/2)+2;attack=Math.ceil((a.attack+b.attack)/2)+1;}
- if(type==='biased'){name='Echokin '+a.name;icon=a.icon+'✨';hp=Math.floor((a.hp*7+b.hp*3+5)/10)+2;attack=Math.floor((a.attack*7+b.attack*3+5)/10)+1;}
- if(type==='additive'){name='Twinheart';icon=a.icon+b.icon;hp=a.hp+b.hp-1;attack=a.attack+b.attack;}
- if(type==='reactive'){[name,icon,effect]=recipe(a.element,b.element);hp=Math.ceil((a.hp+b.hp)/2)+3;attack=Math.ceil((a.attack+b.attack)/2)+2;}
- hp=clamp(hp,1,18);attack=clamp(attack,1,10);return {creature:{id:nextId++,speciesId:'FUSION-TEST',name,icon,element:a.element,type:a.type,cost:0,attack,hp,maxHP:hp,traits,ability:traits[0]||'',gameplayKeywords:traits,artwork:icon,bio:a.bio,anatomy:[...a.anatomy],physical:JSON.parse(JSON.stringify(a.physical)),locomotion:JSON.parse(JSON.stringify(a.locomotion)),affinities:{...a.affinities},origin:'Fusion',exhausted:true,depth:1},effect};}
+function fuseSlots(i,j,enemy=false){
+ const s=enemy?game.enemy:game.player;
+ const a=s.board[i],b=s.board[j];
+ if(game.winner||i===j||!a||!b||a.origin!=='Original'||b.origin!=='Original'||s.energy<FusionEngine.COST)return false;
+ // Charge the fixed price BEFORE the hidden roll. Same resolver for both players.
+ s.energy-=FusionEngine.COST;
+ const result=FusionEngine.resolve(a,b);
+ result.creature.id=nextId++;
+ s.board[i]=result.creature;
+ s.board[j]=null;
+ if(!enemy){game.lastFusion={name:result.creature.name,icon:result.icon,style:result.displayType,element:result.creature.element,type:result.creature.type,attack:result.creature.attack,hp:result.creature.hp,parents:[a.name,b.name]};}
+ log(`${enemy?'Rival':'You'} fused ${a.name} + ${b.name}: ${result.displayType} → ${result.creature.name}!`);
+ applyReaction(result.effect,enemy);
+ checkWin();
+ if(!enemy&&!game.winner)modal='reveal';
+ return true;
+}
 function applyReaction(effect,enemy){if(!effect)return;let s=enemy?game.enemy:game.player,other=enemy?game.player:game.enemy;
  if(effect==='blast'){other.hp-=2;log('💥 The fusion blasts the opposing leader for 2!');}
  if(effect==='restore'){s.hp=Math.min(20,s.hp+3);log('💚 The fusion restores 3 leader HP!');}
  if(effect==='drain'){s.hp=Math.min(20,s.hp+2);other.hp-=2;log('🌘 The fusion drains 2 HP from the opposing leader!');}
  if(effect==='draw'){let fatigue=draw(s);log(fatigue?`Fatigue caused ${fatigue} damage!`:'🌟 The fusion draws a card!');}
  checkWin();}
-function fuseSlots(i,j,type,enemy=false){let s=enemy?game.enemy:game.player;let a=s.board[i],b=s.board[j],cost=FUSIONS.find(f=>f.id===type)?.cost;
- if(i===j||!a||!b||a.origin!=='Original'||b.origin!=='Original'||cost===undefined||s.energy<cost||game.winner)return false;
- s.energy-=cost;let {creature,effect}=createFusion(a,b,type);s.board[i]=creature;s.board[j]=null;
- log(`${enemy?'Rival':'You'} used ${type} fusion: ${creature.name}!`);applyReaction(effect,enemy);checkWin();return true;}
+
 function strike(side,slot,target){let s=side==='player'?game.player:game.enemy,op=side==='player'?game.enemy:game.player,c=s.board[slot];if(!canAttack(c)||game.winner)return false;
  if(target===null && op.board.some(Boolean)){if(side==='player')log('Clear the rival’s critters before striking their leader!');return false;}
  c.exhausted=true;
@@ -89,35 +277,78 @@ function playerSlot(i){let c=game.player.board[i];if(!c||game.winner)return;
 function enemySlot(i){if(mode!=='attacking'||selection===null){log('Select your own creature, then tap Attack.');render();return;}if(strike('player',selection,i)){selection=null;mode='normal';}save();render();}
 function enemyLeader(){if(mode!=='attacking'||selection===null){log('Select a ready creature, then tap Attack.');render();return;}if(strike('player',selection,null)){selection=null;mode='normal';}save();render();}
 function chooseAttack(){if(selection===null){log('Select one of your critters first.');}else if(!canAttack(game.player.board[selection])){log('That critter cannot attack until next round.');}else{mode='attacking';log('Now tap a rival critter, or their leader if the field is empty.');}render();}
-function chooseFuse(){const c=selection===null?null:game.player.board[selection];if(!c){log('Select the first creature to fuse.');}else if(c.origin!=='Original'){log('That creature is a fusion and cannot fuse again.');}else if(game.player.board.filter(x=>x?.origin==='Original').length<2){log('You need TWO original creatures on the field to fuse.');}else{mode='fusing';log('Choose another original creature. These are legacy test fusion styles.');}render();}
+function chooseFuse(){
+ const c=selection===null?null:game.player.board[selection];
+ if(!c){log('Select the first creature to fuse.');}
+ else if(c.origin!=='Original'){log('That creature is a fusion and cannot fuse again.');}
+ else if(game.player.energy<FusionEngine.COST){log(`Fusion costs ${FusionEngine.COST} energy. You need more energy.`);}
+ else if(game.player.board.filter(x=>x?.origin==='Original').length<2){log('You need TWO original creatures on the field to fuse.');}
+ else {mode='fusing';log('Select a second ORIGINAL creature. The outcome will be a hidden weighted roll.');}
+ render();
+}
 function cancel(){mode='normal';selection=null;other=null;modal=null;message='Action cancelled.';render();}
-function doFusion(type){if(selection===null||other===null)return;if(!fuseSlots(selection,other,type)){log('Not enough energy for that fusion.');render();return;}selection=null;other=null;modal=null;mode='normal';save();render();}
-function enemyTurn(){let s=game.enemy;ready(s,game.round+2);let fatigue=draw(s);if(fatigue){log(`Rival took ${fatigue} fatigue damage.`);checkWin();}if(game.winner)return;
- for(let n=0;n<3;n++){if(!s.board.some(c=>!c))break;let options=s.hand.map((c,i)=>({...c,index:i})).filter(c=>c.cost<=s.energy);if(!options.length)break;options.sort((a,b)=>b.attack-a.attack);summon(options[0].index,true);}
- let slots=s.board.map((c,i)=>c?.origin==='Original'?i:-1).filter(i=>i>=0);if(slots.length>=2&&s.energy>=1&&rand(3)===0){const type=s.energy>=2?'reactive':'balanced';fuseSlots(slots[0],slots[1],type,true);}
- for(let i=0;i<3&&!game.winner;i++){if(!canAttack(s.board[i]))continue;let targets=game.player.board.map((c,j)=>c?j:-1).filter(j=>j>=0);let target=targets.length?targets.sort((a,b)=>game.player.board[a].hp-game.player.board[b].hp)[0]:null;strike('enemy',i,target);}}
+function doFusion(){
+ if(selection===null||other===null)return;
+ if(!fuseSlots(selection,other)){log('Fusion failed: two originals and 2 energy required.');render();return;}
+ selection=null;other=null;mode='normal';save();render();
+}
+function enemyTurn(){
+ const s=game.enemy;
+ ready(s,game.round+2);
+ const fatigue=draw(s);
+ if(fatigue){log(`Rival took ${fatigue} fatigue damage.`);checkWin();}
+ if(game.winner)return;
+ const tryFusion=()=>{
+   const originals=s.board.map((c,i)=>c?.origin==='Original'?i:-1).filter(i=>i>=0);
+   if(originals.length>=2&&s.energy>=FusionEngine.COST&&rand(100)<45){
+     fuseSlots(originals[0],originals[1],true);return true;
+   }
+   return false;
+ };
+ tryFusion();
+ for(let n=0;n<3&&!game.winner;n++){
+   if(!s.board.some(c=>!c))break;
+   let options=s.hand.map((c,i)=>({...c,index:i})).filter(c=>c.cost<=s.energy);
+   if(!options.length)break;
+   options.sort((a,b)=>b.attack-a.attack);
+   summon(options[0].index,true);
+ }
+ if(!game.winner)tryFusion();
+ for(let i=0;i<3&&!game.winner;i++){
+   if(!canAttack(s.board[i]))continue;
+   let targets=game.player.board.map((c,j)=>c?j:-1).filter(j=>j>=0);
+   let target=targets.length?targets.sort((a,b)=>game.player.board[a].hp-game.player.board[b].hp)[0]:null;
+   strike('enemy',i,target);
+ }
+}
 function endTurn(){if(game.winner)return;selection=null;other=null;mode='normal';enemyTurn();if(!game.winner){game.round++;ready(game.player,game.round+2);let fatigue=draw(game.player);if(fatigue){log(`You took ${fatigue} fatigue damage.`);checkWin();}if(!game.winner)log(`Round ${game.round}! Your critters are ready.`);}save();render();}
 const creatureHTML=(c)=>!c?'<div class="placeholderIcon">✦</div><span class="placeholderText">Empty slot</span>':`<span class="elementDot">${SYM[c.element]}</span>${c.origin==='Fusion'?`<span class="fusedDot">🔒 FUSED</span>`:''}<div class="art">${esc(c.icon)}</div><div class="creatureName">${esc(c.name)}</div><div class="tags"><span class="tag">${esc(c.type||'')}</span>${c.traits.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div><div class="stats"><span class="stat atk">⚔ ${c.attack}</span><span class="stat hp">♥ ${c.hp}/${c.maxHP}</span></div>`;
 function slotHTML(c,i,enemy){const selected=!enemy&&selection===i, targetable=enemy&&mode==='attacking', exhausted=c?.exhausted;return `<button class="slot ${c?'occupied':''} ${selected?'selected':''} ${targetable&&c?'targetable':''} ${exhausted?'exhausted':''}" data-action="${enemy?'enemySlot':'playerSlot'}" data-index="${i}" aria-label="${c?esc(c.name):'Empty slot'}">${creatureHTML(c)}</button>`;}
 function handHTML(c,i){return `<button class="handCard ${c.cost<=game.player.energy?'affordable':''}" data-action="card" data-index="${i}"><span class="cost">💧${c.cost}</span><span class="handArt">${esc(c.icon)}</span><span class="cardName">${esc(c.name)}</span><span class="cardSub">${SYM[c.element]} ${esc(c.type)}</span><div class="cardBottom"><span style="color:#db8055">⚔ ${c.attack}</span><span style="color:#da6f8c">♥ ${c.hp}</span></div></button>`;}
 let selectedSpecies=0;
 function keyTags(tags){return tags.length?tags.map(t=>`<span class="tag">${esc(t)}</span>`).join(' '):'<i class="small">None</i>';}
-function libraryHTML(){const c=STARTERS[selectedSpecies]||STARTERS[0];return `<div class="overlay"><div class="dialog libraryDialog"><div class="dialogTitle">Creature Library 📖</div><div class="dialogDesc">21 temporary original species · three of each Element and Type. Hidden fields shown for testing. No fusion genetics implemented yet.</div><div class="libraryTabs">${STARTERS.map((s,i)=>`<button class="libChip ${i===selectedSpecies?'active':''}" data-action="libraryPick" data-index="${i}" aria-label="Inspect ${esc(s.name)}">${esc(s.icon)}<span>${esc(s.name)}</span></button>`).join('')}</div><div class="libraryDetail"><div class="libTitle"><span style="font-size:40px">${esc(c.icon)}</span><div><b>${esc(c.name)}</b><div class="small">${esc(c.speciesId)} · ${SYM[c.element]} ${esc(c.element)} · ${esc(c.type)}</div></div></div><div class="miniStats">💧 ${c.cost} energy　 ⚔ ${c.attack} ATK　 ♥ ${c.maxHP} HP　 ${esc(c.ability)}</div><h3>Hidden keywords</h3><div class="kline"><b>Biology</b> ${keyTags([c.bio])}</div><div class="kline"><b>Anatomy</b> ${keyTags(c.anatomy)}</div>${Object.keys(c.physical).map(k=>`<div class="kline"><b>${esc({'coverings':'Coverings','appendages':'Appendages','adaptations':'Adaptations','unusual':'Unusual features'}[k])}</b> ${keyTags(c.physical[k])}</div>`).join('')}${Object.keys(c.locomotion).map(k=>`<div class="kline"><b>${esc({'ground':'Ground movement','aerial':'Aerial movement','aquatic':'Aquatic movement','subterranean':'Subterranean movement'}[k])}</b> ${keyTags(c.locomotion[k])}</div>`).join('')}<h3>Fixed affinities (0–100)</h3>${ELEMENTS.map(e=>`<div class="affRow"><span>${SYM[e]} ${esc(e)}</span><div class="affTrack"><i style="width:${c.affinities[e]}%"></i></div><b>${c.affinities[e]}</b></div>`).join('')}</div><div class="modalFooter"><button class="secondary" data-action="closeModal">Back to match</button></div></div></div>`;}
+function libraryHTML(){const c=STARTERS[selectedSpecies]||STARTERS[0];return `<div class="overlay"><div class="dialog libraryDialog"><div class="dialogTitle">Creature Library 📖</div><div class="dialogDesc">21 temporary original species · three of each Element and Type. Hidden fields shown for testing. Genetic fusion scoring is active; weights remain experimental.</div><div class="libraryTabs">${STARTERS.map((s,i)=>`<button class="libChip ${i===selectedSpecies?'active':''}" data-action="libraryPick" data-index="${i}" aria-label="Inspect ${esc(s.name)}">${esc(s.icon)}<span>${esc(s.name)}</span></button>`).join('')}</div><div class="libraryDetail"><div class="libTitle"><span style="font-size:40px">${esc(c.icon)}</span><div><b>${esc(c.name)}</b><div class="small">${esc(c.speciesId)} · ${SYM[c.element]} ${esc(c.element)} · ${esc(c.type)}</div></div></div><div class="miniStats">💧 ${c.cost} energy　 ⚔ ${c.attack} ATK　 ♥ ${c.maxHP} HP　 ${esc(c.ability)}</div><h3>Hidden keywords</h3><div class="kline"><b>Biology</b> ${keyTags([c.bio])}</div><div class="kline"><b>Anatomy</b> ${keyTags(c.anatomy)}</div>${Object.keys(c.physical).map(k=>`<div class="kline"><b>${esc({'coverings':'Coverings','appendages':'Appendages','adaptations':'Adaptations','unusual':'Unusual features'}[k])}</b> ${keyTags(c.physical[k])}</div>`).join('')}${Object.keys(c.locomotion).map(k=>`<div class="kline"><b>${esc({'ground':'Ground movement','aerial':'Aerial movement','aquatic':'Aquatic movement','subterranean':'Subterranean movement'}[k])}</b> ${keyTags(c.locomotion[k])}</div>`).join('')}<h3>Fixed affinities (0–100)</h3>${ELEMENTS.map(e=>`<div class="affRow"><span>${SYM[e]} ${esc(e)}</span><div class="affTrack"><i style="width:${c.affinities[e]}%"></i></div><b>${c.affinities[e]}</b></div>`).join('')}</div><div class="modalFooter"><button class="secondary" data-action="closeModal">Back to match</button></div></div></div>`;}
 function overlay(){if(!modal)return '';if(modal==='library')return libraryHTML();if(modal==='win')return `<div class="overlay"><div class="dialog center"><div class="win">${game.winner==='player'?'🏆':'🌧️'}</div><div class="dialogTitle">${game.winner==='player'?'You won!':'The rival wins!'}</div><div class="dialogDesc">${game.winner==='player'?'Your little fusions saved the day.':'Try new fusion pairings and fight again!'}</div><button class="restart" data-action="restart">Play another match ✨</button></div></div>`;
- if(modal==='help')return `<div class="overlay"><div class="dialog tutorial"><div class="dialogTitle">How to play ✨</div><div class="dialogDesc">Make magical critter combinations in this little offline TCG.</div><p>🐰 <b>Summon:</b> Tap a card in your hand. Each costs energy. You have three field slots.</p><p>⚔️ <b>Attack:</b> Tap your critter → Attack → an enemy critter. Defeat all enemies to attack their leader. Creatures usually wait a turn to attack.</p><p>🧬 <b>Fuse:</b> Select two ORIGINAL creatures and test one of the four legacy fusion styles. A fusion creation cannot fuse again. The planned weighted hidden algorithm is not built yet.</p><p>🌟 <b>Creatures:</b> Tap 📖 to inspect all 21 sample species and their approved hidden keyword/elemental-affinity fields. These are placeholders, not your final cards.</p><p>💖 <b>Victory:</b> Bring the rival's leader from 20 HP down to zero.</p><p class="small">Your match is saved in this browser. When hosted on HTTPS, the game can be added to the iPhone Home Screen and used offline after it has loaded once.</p><div class="modalFooter"><button class="secondary" data-action="closeModal">Got it!</button></div></div></div>`;
+ if(modal==='help')return `<div class="overlay"><div class="dialog tutorial"><div class="dialogTitle">How to play ✨</div><div class="dialogDesc">Make magical critter combinations in this little offline TCG.</div><p>🐰 <b>Summon:</b> Tap a card in your hand. Each costs energy. You have three field slots.</p><p>⚔️ <b>Attack:</b> Tap your critter → Attack → an enemy critter. Defeat all enemies to attack their leader. Creatures usually wait a turn to attack.</p><p>🧬 <b>Fuse:</b> Select two ORIGINAL creatures → Fuse → choose the second creature → pay 2 Energy → reveal a weighted-random Balanced, Biased, Additive, or Reactive creation. You don't pick the type. A fusion creation cannot fuse again.</p><p>🌟 <b>Creatures:</b> Tap 📖 to inspect all 21 sample species and their approved hidden keyword/elemental-affinity fields. These are placeholders, not your final cards.</p><p>💖 <b>Victory:</b> Bring the rival's leader from 20 HP down to zero.</p><p class="small">Your match is saved in this browser. When hosted on HTTPS, the game can be added to the iPhone Home Screen and used offline after it has loaded once.</p><div class="modalFooter"><button class="secondary" data-action="closeModal">Got it!</button></div></div></div>`;
  if(modal==='restart')return `<div class="overlay"><div class="dialog"><div class="dialogTitle">Start over?</div><div class="dialogDesc">Your current match will be replaced.</div><div class="modalFooter" style="justify-content:space-between"><button class="secondary" data-action="closeModal">Keep playing</button><button class="restart" style="width:auto;margin:0" data-action="restart">New match</button></div></div></div>`;
- const a=game.player.board[selection],b=game.player.board[other];return `<div class="overlay"><div class="dialog"><div class="dialogTitle">Legacy Fusion Test 🧬</div><div class="dialogDesc">${a?esc(a.icon):''} ${a?esc(a.name):''} + ${b?esc(b.icon):''} ${b?esc(b.name):''}<br>Temporary v0.1 modes for gameplay testing. The approved hidden weighted algorithm is not implemented.</div><div class="fusionList">${FUSIONS.map(f=>`<button class="fusionOption" data-action="fusion" data-type="${f.id}" ${f.cost>game.player.energy?'disabled':''}><span class="emoji">${f.icon}</span><span><div class="flabel">${f.title}</div><div class="desc">${f.desc}</div></span><span class="price">💧${f.cost}</span></button>`).join('')}</div><div class="modalFooter"><button class="secondary" data-action="cancel">Cancel</button></div></div></div>`;}
+ if(modal==='reveal'){
+  const f=game.lastFusion;
+  return `<div class="overlay"><div class="dialog center"><div class="win">${f.icon}</div><div class="dialogTitle">${esc(f.style)} Fusion!</div><div class="dialogDesc">${esc(f.parents[0])} + ${esc(f.parents[1])}</div><div class="resultCreature"><div class="resultIcon">${esc(f.element==='Feöhr'?'🔥':SYM[f.element])}</div><b>${esc(f.name)}</b><div class="small">${esc(f.element)} · ${esc(f.type)}</div><div class="miniStats">⚔ ${f.attack} ATK &nbsp; ♥ ${f.hp} HP</div><div class="small">🔒 Fusion creation: cannot fuse again</div></div><div class="modalFooter"><button class="restart" data-action="closeModal">Back to battle</button></div></div></div>`;
+ }
+ const a=game.player.board[selection],b=game.player.board[other];
+ return `<div class="overlay"><div class="dialog"><div class="dialogTitle">Hidden Fusion 🧬</div><div class="dialogDesc">${a?esc(a.icon):''} ${a?esc(a.name):''} + ${b?esc(b.icon):''} ${b?esc(b.name):''}<br><br>Your creature's biology, anatomy, physical traits, movement and all seven elemental affinities influence the hidden roll. You cannot choose the outcome.</div><div class="fusionPreview"><span>⚖️ Balanced</span><span>🎯 Biased</span><span>➕ Additive</span><span>🌟 Reactive</span></div><div class="modalFooter"><button class="secondary" data-action="cancel">Cancel</button><button class="restart" style="width:auto;margin:0" data-action="confirmFusion" ${game.player.energy<FusionEngine.COST?'disabled':''}>Fuse for 💧${FusionEngine.COST}</button></div></div></div>`;
+}
 function render(){if(!game)return;const p=game.player,e=game.enemy;
- el('app').innerHTML=`<header class="topline"><div class="brand"><span class="mascot">🐰</span><div><h1>Fable Fusions</h1><p>CREATURE TEST v0.2</p></div></div><div style="display:flex;gap:7px"><button class="iconbtn" data-action="library" aria-label="Creature Library">📖</button><button class="iconbtn" data-action="help" aria-label="How to play">?</button><button class="iconbtn" data-action="resetAsk" aria-label="New match">↻</button></div></header>
+ el('app').innerHTML=`<header class="topline"><div class="brand"><span class="mascot">🐰</span><div><h1>Fable Fusions</h1><p>FUSION LAB v0.3</p></div></div><div style="display:flex;gap:7px"><button class="iconbtn" data-action="library" aria-label="Creature Library">📖</button><button class="iconbtn" data-action="help" aria-label="How to play">?</button><button class="iconbtn" data-action="resetAsk" aria-label="New match">↻</button></div></header>
  <section class="panel rival"><div class="leader ${mode==='attacking'?'targetable':''}" data-action="enemyLeader" role="button" tabindex="0" aria-label="Attack rival leader"><div class="avatar"><span class="avatarIcon">🦝</span><div><div class="label">Rival</div><div class="name">Mischief Mage</div></div></div><div class="health">♥ ${e.hp}/20</div></div><div class="statline"><span class="pill">🃏 ${e.hand.length} cards</span><span class="pill">📚 ${e.deck.length} in deck</span><span class="pill energy">💧 ${e.energy}/${e.maxEnergy}</span></div><div class="areaTitle">Rival's field <span class="helptext">${mode==='attacking'?'Tap an enemy to strike':''}</span></div><div class="board">${e.board.map((c,i)=>slotHTML(c,i,true)).join('')}</div></section>
  <div class="statline" style="justify-content:center"><span class="pill round">✧ Round ${game.round}</span><span class="pill">${game.winner?'Match ended':'Your turn'}</span></div>
  <section class="panel you"><div class="leader"><div class="avatar"><span class="avatarIcon">🧙</span><div><div class="label">Your side</div><div class="name">Creature Keeper</div></div></div><div class="health good">♥ ${p.hp}/20</div></div><div class="statline"><span class="pill energy">💧 ${p.energy}/${p.maxEnergy} energy</span><span class="pill">📚 ${p.deck.length} in deck</span><span class="pill">🃏 ${p.hand.length} in hand</span></div><div class="areaTitle">Your field <span class="helptext">${selection!==null?esc(p.board[selection]?.name||'')+' selected':'Select a critter'}</span></div><div class="board">${p.board.map((c,i)=>slotHTML(c,i,false)).join('')}</div></section>
  <div class="toast"><span>${esc(message||'Pick a critter to begin!')}</span>${mode!=='normal'?'<button style="border:0;background:#fff2;padding:5px 9px;border-radius:8px;color:#fff;font-weight:800" data-action="cancel">Cancel</button>':''}</div>
  <div class="actionbar"><button class="act attack ${mode==='attacking'?'active':''}" data-action="attack" ${game.winner?'disabled':''}>⚔️ Attack</button><button class="act fuse ${mode==='fusing'?'active':''}" data-action="fuse" ${game.winner?'disabled':''}>✨ Fuse</button><button class="act end" data-action="end" ${game.winner?'disabled':''}>End turn →</button></div>
  <div class="areaTitle">Your hand <span class="helptext">Tap to summon • Swipe for more</span></div><div class="hand">${p.hand.length?p.hand.map(handHTML).join(''):'<span class="small">Hand empty. End your turn to draw.</span>'}</div>
- <div class="log"><div class="logHead">Battle journal</div><div class="logMessage">${game.log.slice(0,3).map(esc).join('<br>')}</div></div><div class="attribution">Creature Test v0.2 · 21 example species · Fusions use old test mechanics</div>${overlay()}`;
+ <div class="log"><div class="logHead">Battle journal</div><div class="logMessage">${game.log.slice(0,3).map(esc).join('<br>')}</div></div><div class="attribution">Fusion Lab v0.3 · 21 example species · Hidden weighted fusion enabled</div>${overlay()}`;
 }
-document.addEventListener('click',(ev)=>{const t=ev.target.closest('[data-action]');if(!t)return;const a=t.dataset.action,i=Number(t.dataset.index);switch(a){case'card':playerCard(i);break;case'playerSlot':playerSlot(i);break;case'enemySlot':enemySlot(i);break;case'enemyLeader':enemyLeader();break;case'attack':chooseAttack();break;case'fuse':chooseFuse();break;case'end':endTurn();break;case'cancel':cancel();break;case'fusion':doFusion(t.dataset.type);break;case'library':selectedSpecies=0;modal='library';render();break;case'libraryPick':selectedSpecies=i;render();break;case'help':modal='help';render();break;case'closeModal':modal=null;render();break;case'resetAsk':modal='restart';render();break;case'restart':fresh();break;}});
+document.addEventListener('click',(ev)=>{const t=ev.target.closest('[data-action]');if(!t)return;const a=t.dataset.action,i=Number(t.dataset.index);switch(a){case'card':playerCard(i);break;case'playerSlot':playerSlot(i);break;case'enemySlot':enemySlot(i);break;case'enemyLeader':enemyLeader();break;case'attack':chooseAttack();break;case'fuse':chooseFuse();break;case'end':endTurn();break;case'cancel':cancel();break;case'confirmFusion':doFusion();break;case'library':selectedSpecies=0;modal='library';render();break;case'libraryPick':selectedSpecies=i;render();break;case'help':modal='help';render();break;case'closeModal':modal=null;render();break;case'resetAsk':modal='restart';render();break;case'restart':fresh();break;}});
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&modal){modal=null;mode='normal';render();}if((ev.key==='Enter'||ev.key===' ')&&ev.target?.dataset?.action==='enemyLeader'){ev.preventDefault();enemyLeader();}});
 if(!restore())fresh();else render();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
 </script></body></html>
